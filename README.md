@@ -48,3 +48,24 @@ You can use Docker to run RabbitMQ:
 ```sh
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
 
+---
+
+mvn clean install
+
+---
+
+Access the application using this URL:
+http://localhost:7001/rabbit-ejb-example/index.jsp
+
+Send a message using this following URL:
+http://localhost:7001/rabbit-ejb-example/send?message=HelloWorld
+
+
+---
+
+
+## 📞 **Contact**
+For any issues or questions, feel free to reach out:
+
+Email: bondarali1380@gmail.com
+GitHub: AliBondar
