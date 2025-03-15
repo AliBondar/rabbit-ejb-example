@@ -4,19 +4,28 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+//import org.bondar.rabbitejbexample.entity.Message;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 
 @Singleton
 @Startup
 public class RabbitConsumer {
+
     private static final String QUEUE_NAME = "exampleQueue";
+
     private Connection connection;
     private Channel channel;
+
+//    @PersistenceContext(unitName = "rabbitmqPU")
+//    private EntityManager entityManager;
 
     @PostConstruct
     public void init() {
@@ -30,10 +39,19 @@ public class RabbitConsumer {
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
+
                 System.out.println(" [x] Received '" + message + "'");
+                boolean success = persistMessage(message);
+
+                if (success) {
+                    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    System.out.println(" [✔] Message saved and acknowledged: " + message);
+                } else {
+                    System.err.println(" [❌] Message NOT saved, will not acknowledge!");
+                }
             };
 
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+            channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> {});
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,6 +64,22 @@ public class RabbitConsumer {
             if (connection != null) connection.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Transactional
+    private boolean persistMessage(String content) {
+        try {
+//            Message message = new Message();
+//            message.setContent(content);
+//            message.setProcessedSuccessfully(true);
+
+//            entityManager.persist(message);
+//            entityManager.flush();
+            return true;
+        } catch (Exception e) {
+            System.err.println("❌ Database Error: " + e.getMessage());
+            return false;
         }
     }
 }

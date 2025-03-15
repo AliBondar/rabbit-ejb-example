@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 public class RabbitProducer {
 
     private static final String QUEUE_NAME = "exampleQueue";
+    private static final int MESSAGE_COUNT = 10; // تعداد پیام‌هایی که ارسال می‌کنیم
+    private static final long DELAY_MS = 2000;   // تأخیر بین ارسال‌ها (به میلی‌ثانیه)
 
     public void sendMessage(String message) {
         try {
@@ -22,6 +24,28 @@ public class RabbitProducer {
                 channel.queueDeclare(QUEUE_NAME, false, false, false, null);
                 channel.basicPublish("", QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
                 System.out.println(" [x] Sent '" + message + "'");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessagesInLoop(String baseMessage) {
+        try {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost("localhost");
+
+            try (Connection connection = factory.newConnection();
+                 Channel channel = connection.createChannel()) {
+
+                channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+
+                for (int i = 1; i <= MESSAGE_COUNT; i++) {
+                    String message = baseMessage + " - " + i;
+                    channel.basicPublish("", QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
+                    System.out.println(" [x] Sent: " + message);
+                    Thread.sleep(DELAY_MS); // 🕒 تأخیر قبل از ارسال پیام بعدی
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
