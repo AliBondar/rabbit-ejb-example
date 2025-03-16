@@ -18,6 +18,7 @@ public class MessageController {
     private RabbitProducer rabbitProducer;
 
     @GET
+    @Path("/sendMessages")
     public Response sendMessages() {
         rabbitProducer.sendMessagesInLoop("Test Message");
         return Response.ok("Messages sent successfully!").build();

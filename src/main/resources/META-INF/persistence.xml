@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
-    <persistence-unit name="rabbitmqPU">
-<!--        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
-<!--        <properties>-->
-<!--            &lt;!&ndash; تنظیمات JDBC برای H2 &ndash;&gt;-->
-<!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>-->
-<!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:C:/Users/bondar/H2test/Rabbit_Ejb_DB"/>-->
-<!--            <property name="javax.persistence.jdbc.user" value="sa"/>-->
-<!--            <property name="javax.persistence.jdbc.password" value=""/>-->
-
-<!--            &lt;!&ndash; تنظیمات Hibernate &ndash;&gt;-->
-<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
-<!--            <property name="hibernate.hbm2ddl.auto" value="update"/>-->
-<!--            <property name="hibernate.show_sql" value="true"/>-->
-<!--            <property name="hibernate.format_sql" value="true"/>-->
-<!--        </properties>-->
+    <persistence-unit name="rabbitmqPU" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jta-data-source>OracleEx</jta-data-source>
+        <properties>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.transaction.jta.platform" value="Weblogic"/>
+        </properties>
     </persistence-unit>
 </persistence>
