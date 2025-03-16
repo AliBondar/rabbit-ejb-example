@@ -4,12 +4,12 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-//import org.bondar.rabbitejbexample.entity.Message;
+import org.bondar.rabbitejbexample.dao.MessageDao;
+import org.bondar.rabbitejbexample.entity.Message;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.ejb.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -19,13 +19,13 @@ import java.nio.charset.StandardCharsets;
 @Startup
 public class RabbitConsumer {
 
+    @EJB
+    private MessageDao messageDao;
+
     private static final String QUEUE_NAME = "exampleQueue";
 
     private Connection connection;
     private Channel channel;
-
-//    @PersistenceContext(unitName = "rabbitmqPU")
-//    private EntityManager entityManager;
 
     @PostConstruct
     public void init() {
@@ -68,14 +68,14 @@ public class RabbitConsumer {
     }
 
     @Transactional
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private boolean persistMessage(String content) {
         try {
-//            Message message = new Message();
-//            message.setContent(content);
-//            message.setProcessedSuccessfully(true);
+            Message message = new Message();
+            message.setContent(content);
+            message.setProcessedSuccessfully(true);
 
-//            entityManager.persist(message);
-//            entityManager.flush();
+            messageDao.create(message);
             return true;
         } catch (Exception e) {
             System.err.println("❌ Database Error: " + e.getMessage());
